@@ -23,8 +23,6 @@
 */
 
 import java.awt.*;
-import java.awt.geom.*;
-import java.awt.event.*;
 import java.awt.image.*;
 import java.io.File;
 import java.io.IOException;
@@ -35,9 +33,10 @@ import javax.swing.*;
 import TUIO.*;
 
 @SuppressWarnings("serial")
-public class GraphicView extends JComponent implements TuioListener {
+public class GraphicView extends JComponent {
 
-	private Hashtable<Long,TuioBlob>   blobList   = new Hashtable<Long,TuioBlob>();
+	public Hashtable<Long,TuioBlob>   blobList   = new Hashtable<Long,TuioBlob>();
+	private Game game;
 
 	/* table_size should be the resolution of the camera */
 	public static final int table_size = 720;
@@ -49,8 +48,10 @@ public class GraphicView extends JComponent implements TuioListener {
 	private Image bgImage;
 	private Image objectiveImage;
 	
-	public GraphicView() {
+	public GraphicView(Game g) {
 		super();
+		
+		game = g;
 		
 		int width  = (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth();
 		int height = (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight();
@@ -74,41 +75,6 @@ public class GraphicView extends JComponent implements TuioListener {
 		scale  = height/(float)GraphicView.table_size;	
 	}
 	
-	public void addTuioObject(TuioObject tobj) {}
-
-	public void updateTuioObject(TuioObject tobj) {}
-	
-	public void removeTuioObject(TuioObject tobj) {}
-	public void addTuioCursor(TuioCursor tcur) {}
-
-	public void updateTuioCursor(TuioCursor tcur) {}
-	
-	public void removeTuioCursor(TuioCursor tcur) {}
-
-	public void addTuioBlob(TuioBlob tblb) {
-		blobList.put(tblb.getSessionID(),tblb);
-		
-		if (verbose) 
-			System.out.println("add blb "+tblb.getBlobID()+" ("+tblb.getSessionID()+") "+tblb.getX()+" "+tblb.getY()+" "+tblb.getAngle());	
-	}
-	
-	public void updateTuioBlob(TuioBlob tblb) {
-		
-		if (verbose) 
-			System.out.println("set blb "+tblb.getBlobID()+" ("+tblb.getSessionID()+") "+tblb.getX()+" "+tblb.getY()+" "+tblb.getAngle()+" "+tblb.getMotionSpeed()+" "+tblb.getRotationSpeed()+" "+tblb.getMotionAccel()+" "+tblb.getRotationAccel()); 	
-	}
-	
-	public void removeTuioBlob(TuioBlob tblb) {
-		blobList.remove(tblb.getSessionID());
-		
-		if (verbose) 
-			System.out.println("del blb "+tblb.getBlobID()+" ("+tblb.getSessionID()+")");	
-	}
-	
-	
-	public void refresh(TuioTime frameTime) {
-		repaint();
-	}
 	
 	public void paint(Graphics g) {
 		update(g);

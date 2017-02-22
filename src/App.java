@@ -1,41 +1,34 @@
 import java.awt.*;
-import java.awt.geom.*;
 import java.awt.event.*;
-import java.awt.image.*;
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import TUIO.*;
 
 public class App  {
-
-	private final int window_width  = 640;
-	private final int window_height = 480;
-
-	private boolean fullscreen = false;
 	
-	private GraphicView demo;
+	private GraphicView view;
+	private BlobListener blbl;
+	private Game game;
 	private JFrame frame;
-	private Cursor invisibleCursor;
 	
 	public App() {
-		demo = new GraphicView();
-		invisibleCursor = Toolkit.getDefaultToolkit().createCustomCursor(new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB), new Point(0, 0), "invisible cursor");
+		game = new Game();
+		view = new GraphicView(game);
+		blbl = new BlobListener(game);
+		game.setView(view);
+		
 		setupWindow();
 		showWindow();
-	}
-	
-	public TuioListener getTuioListener() {
-		return demo;
+		
+		TuioClient client = new TuioClient();
+		 
+		client.addTuioListener(blbl);
+		client.connect();
 	}
 	
 	public void setupWindow() {
 	
 		frame = new JFrame();
-		frame.add(demo);
+		frame.add(view);
 
 		frame.setTitle("PSTL app");
 		frame.setResizable(false);
@@ -55,7 +48,7 @@ public class App  {
 	public void showWindow() {
 		int width  = (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth();
 		int height = (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight();
-		demo.setSize(width,height);
+		view.setSize(width,height);
 		
 		frame.pack();
 		Insets insets = frame.getInsets();			
@@ -69,10 +62,6 @@ public class App  {
 	public static void main(String argv[]) {
 		
 		App demo = new App();
-		TuioClient client = new TuioClient();
- 
-		client.addTuioListener(demo.getTuioListener());
-		client.connect();
 	}
 	
 }
