@@ -7,21 +7,35 @@ public class BlobListener implements TuioListener {
 	public BlobListener(Game g) {
 		game = g;
 	}
+	
+	/** TODO : Move this **/
+	public void checkObjOk(TuioBlob tblb) {
+		Robot r = new Robot();
+		r.x = (int) (tblb.getScreenX(Settings.getWinWidth()) + (tblb.getWidth()/2));
+		r.y = (int) (tblb.getScreenY(Settings.getWinHeight()) + (tblb.getHeight()/2));
+		
+		if(r.isOnObjective(game.getObj())) {
+			game.genRandomObjective();
+		}
+	}
 
 	public void addTuioBlob(TuioBlob tblb) {
-		if(game.getView() == null)
-				//.put(tblb.getSessionID(), tblb);
-		System.out.println("received");
+		game.getView().blobList.put(tblb.getSessionID(), tblb);
+//		System.out.println("received");
+		
+		checkObjOk(tblb);
 	}
 	
 	public void updateTuioBlob(TuioBlob tblb) {
 		game.getView().blobList.put(tblb.getSessionID(), tblb);
-		System.out.println("udate");
+//		System.out.println("udate");
+		
+		checkObjOk(tblb);
 	}
 	
 	public void removeTuioBlob(TuioBlob tblb) {
 		game.getView().blobList.remove(tblb.getSessionID());
-		System.out.println("removve");	
+//		System.out.println("removve");	
 	}
 
 	@Override

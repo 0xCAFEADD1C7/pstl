@@ -23,7 +23,6 @@
 */
 
 import java.awt.*;
-import java.awt.image.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -42,29 +41,36 @@ public class GraphicView extends JComponent {
 	public static final int table_size = 720;
 	
 	public static int width, height;
-	private float scale = 1.0f;
 	public boolean verbose = false;
+	
+	private final String moonFile = "moon.jpg";
+	private final String starFile = "star.png";
 	
 	private Image bgImage;
 	private Image objectiveImage;
+	
+	private Image loadImage(String path, int w, int h) {
+		Image im = null;
+		try {
+			im = ImageIO.read(new File(path)).getScaledInstance(w, h, Image.SCALE_SMOOTH);
+		} catch (IOException e) {
+			System.out.println("Impossible de charger "+path);
+			e.printStackTrace();
+		}
+		return im;
+	}
 	
 	public GraphicView(Game g) {
 		super();
 		
 		game = g;
 		
-		int width  = (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth();
-		int height = (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+		int width  = Settings.getWinWidth();
+		int height = Settings.getWinHeight();
 		
 		/* loading BG image */
-		BufferedImage img = null;
-		final String moonFile = "moon.jpg";
-		try {
-			bgImage = ImageIO.read(new File(moonFile)).getScaledInstance(width, height, Image.SCALE_SMOOTH);
-		} catch (IOException e) {
-			System.out.println("Impossible de charger "+moonFile);
-			e.printStackTrace();
-		}
+		bgImage = loadImage(moonFile, width, height);
+		objectiveImage = loadImage(starFile, Settings.getObjectiveSize()*2, Settings.getObjectiveSize()*2);
 	}
 	
 	@Override
@@ -72,7 +78,6 @@ public class GraphicView extends JComponent {
 		super.setSize(w,h);
 		width = w;
 		height = h;
-		scale  = height/(float)GraphicView.table_size;	
 	}
 	
 	
@@ -88,7 +93,12 @@ public class GraphicView extends JComponent {
 		
 		// render BG
 		g2.drawImage(bgImage, 0,0,null);
-
+		
+		// render objective
+		int xpos, ypos;
+		xpos = game.getObj().x - Settings.getObjectiveSize()/2;
+		ypos = game.getObj().y - Settings.getObjectiveSize()/2;
+		g2.drawImage(objectiveImage, xpos, ypos, null);
 		
 //		 draw the blobs
 		Enumeration<TuioBlob> blobs = blobList.elements();
@@ -100,8 +110,13 @@ public class GraphicView extends JComponent {
 				int bw = b.getScreenWidth(width);
 				int bh = b.getScreenHeight(height);
 				
+				bx = (int) (b.getScreenX(Settings.getWinWidth()) + (b.getWidth()/2));
+				by = (int) (b.getScreenY(Settings.getWinHeight()) + (b.getHeight()/2));
+				
 				g2.setPaint(Color.white);	
 				g2.fillOval(bx,by,bw,bh);
+				g2.setPaint(Color.blue);
+				g2.fillArc(bx, by, 10, 10, 0, 360);
 			}
 		}
 		

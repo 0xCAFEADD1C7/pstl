@@ -23,6 +23,10 @@ public class App  {
 		 
 		client.addTuioListener(blbl);
 		client.connect();
+		
+		if(!client.isConnected()) { /* erreur */
+			JOptionPane.showMessageDialog(null, "Impossible d'écouter sur le port 3333!!", "Erreur", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 	
 	public void setupWindow() {
@@ -35,8 +39,8 @@ public class App  {
 
 		/* exit */
 		frame.addWindowListener( new WindowAdapter() { public void windowClosing(WindowEvent evt) {
-				System.exit(0);
-			}});
+			System.exit(0);
+		}});
 	}
 	
 	public void destroyWindow() {
@@ -46,8 +50,8 @@ public class App  {
 	}
 	
 	public void showWindow() {
-		int width  = (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth();
-		int height = (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+		int width  = Settings.getWinWidth();
+		int height = Settings.getWinHeight();
 		view.setSize(width,height);
 		
 		frame.pack();
@@ -61,6 +65,7 @@ public class App  {
 	
 	public static void main(String argv[]) {
 		
+		@SuppressWarnings("unused")
 		App demo = new App();
 	}
 	

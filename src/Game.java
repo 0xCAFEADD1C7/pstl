@@ -8,11 +8,11 @@ public class Game {
 	
 	/* génére un objectif à une position aléatoire */
 	public void genRandomObjective() {
-		
+		obj = new Point((int)(Math.random()*Settings.getWinWidth()), (int)(Math.random()*Settings.getWinHeight()));
 	}
 	
 	public Game() {
-		
+		genRandomObjective();
 	}
 	
 	public Robot[] getRobots() {
