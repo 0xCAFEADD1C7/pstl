@@ -1,48 +1,68 @@
+import javax.swing.JOptionPane;
+
+import interfaces.Robot;
 import TUIO.*;
 
-public class BlobListener implements TuioListener {	
+public class BlobListener implements TuioListener, interfaces.BlobListener {	
 	
-	private Game game;
-	
-	public BlobListener(Game g) {
-		game = g;
-	}
-	
-	/** TODO : Move this **/
-	public void checkObjOk(TuioBlob tblb) {
-		Robot r = new Robot();
-		r.x = (int) (tblb.getScreenX(Settings.getWinWidth()) + (tblb.getWidth()/2));
-		r.y = (int) (tblb.getScreenY(Settings.getWinHeight()) + (tblb.getHeight()/2));
-		
-		if(r.isOnObjective(game.getObj())) {
-			game.genRandomObjective();
-		}
-	}
+	private Robot r1, r2;
+	private long lur1, lur2; // dernier timestamp de mise à jour de la position des robots
+//	private 
 
 	public void addTuioBlob(TuioBlob tblb) {
-		game.getView().blobList.put(tblb.getSessionID(), tblb);
-//		System.out.println("received");
+		// nouveau blob détécté
+		if (r1 == null) {
+			r1 = new RobotImpl();
+			r1.set(
+				tblb.getScreenX(Settings.getWinWidth()),
+				tblb.getScreenY(Settings.getWinHeight()),
+				tblb.getScreenWidth(Settings.getWinWidth()),
+				tblb.getScreenHeight(Settings.getWinHeight()),
+				tblb.getAngle());
+		}
 		
-		checkObjOk(tblb);
+		if (r2 == null) {
+			r2 = new RobotImpl();
+			r2.set(
+				tblb.getScreenX(Settings.getWinWidth()),
+				tblb.getScreenY(Settings.getWinHeight()),
+				tblb.getScreenWidth(Settings.getWinWidth()),
+				tblb.getScreenHeight(Settings.getWinHeight()),
+				tblb.getAngle());
+		}
 	}
 	
 	public void updateTuioBlob(TuioBlob tblb) {
-		game.getView().blobList.put(tblb.getSessionID(), tblb);
-//		System.out.println("udate");
-		
-		checkObjOk(tblb);
+		// màj d'un blob
 	}
 	
 	public void removeTuioBlob(TuioBlob tblb) {
-		game.getView().blobList.remove(tblb.getSessionID());
-//		System.out.println("removve");	
+		// blob perdu de vue
+		
 	}
 
 	@Override
-	public void refresh(TuioTime ftime) {
-		game.getView().repaint();
+	public Robot getRobot1() {
+		return r1;
+	}
+
+	@Override
+	public Robot getRobot2() {
+		return r2;
 	}
 	
+	public BlobListener() {
+		TuioClient client = new TuioClient(); 
+		client.addTuioListener(this);
+		client.connect();
+		
+		if(!client.isConnected()) { /* erreur */
+			JOptionPane.showMessageDialog(null, "Impossible d'écouter sur le port 3333!!", "Erreur", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	@Override
+	public void refresh(TuioTime ftime) {} //TODO ?	
 	public void addTuioObject(TuioObject tobj) {}
 	public void updateTuioObject(TuioObject tobj) {}	
 	public void removeTuioObject(TuioObject tobj) {}

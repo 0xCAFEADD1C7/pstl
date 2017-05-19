@@ -1,41 +1,73 @@
-import java.awt.Point;
+import interfaces.BlobListener;
+import interfaces.Robot;
 
-public class Game {
-	private Robot[] robots;
+import java.awt.Point;
+import java.awt.geom.Point2D;
+
+public class Game implements interfaces.Game {
+	private BlobListener bl;
+	
 	private Point obj;
 	
-	private GraphicView view;
+	private int score1, score2;
+	private Robot rob1, rob2;
+	
 	
 	/* génére un objectif à une position aléatoire */
-	public void genRandomObjective() {
+	public void genObjective() {
 		obj = new Point((int)(Math.random()*Settings.getWinWidth()), (int)(Math.random()*Settings.getWinHeight()));
 	}
 	
-	public Game() {
-		genRandomObjective();
-	}
-	
-	public Robot[] getRobots() {
-		return robots;
+	public Game(BlobListener b) {
+		genObjective();
+		bl = b;
 	}
 
-	public void setRobots(Robot[] robots) {
-		this.robots = robots;
+	@Override
+	public int getRobot1Score() {
+		return score1;
 	}
 
-	public Point getObj() {
+	@Override
+	public int getRobot2Score() {
+		return score2;
+	}
+
+	@Override
+	public Robot getRobot1() {
+		return rob1;
+	}
+
+	@Override
+	public Robot getRobot2() {
+		return rob2;
+	}
+
+	@Override
+	public Point2D getObjective() {
 		return obj;
 	}
 
-	public void setObj(Point obj) {
-		this.obj = obj;
+	@Override
+	public void update() {
+		rob1 = bl.getRobot1();
+		rob2 = bl.getRobot2();
+		
+		boolean r1OnPoint = robotOnPoint(rob1, obj);
+		boolean r2OnPoint = robotOnPoint(rob2, obj);
+		
+		if(r1OnPoint || r2OnPoint) {
+			if(r1OnPoint) {
+				score1++;
+			} else {
+				score2++;
+			}
+			genObjective();
+		}
 	}
-
-	public GraphicView getView() {
-		return view;
+	
+	private boolean robotOnPoint(Robot r, Point p) {
+		return false; // TODO
+		
 	}
-
-	public void setView(GraphicView view) {
-		this.view = view;
-	}	
 }
