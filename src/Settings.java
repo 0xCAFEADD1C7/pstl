@@ -10,6 +10,6 @@ public class Settings {
 	}
 	
 	public static int getObjectiveSize() {
-		return 30;
+		return 60;
 	}
 }

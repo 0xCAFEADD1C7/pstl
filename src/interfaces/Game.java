@@ -9,6 +9,9 @@ public interface Game {
 	Robot getRobot1();
 	Robot getRobot2();
 	
+	boolean hasRobots();
+	void start();
+	
 	Point2D getObjective();
 	
 	void update();

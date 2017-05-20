@@ -11,6 +11,8 @@ public class Game implements interfaces.Game {
 	
 	private int score1, score2;
 	private Robot rob1, rob2;
+
+	private boolean started;
 	
 	
 	/* génére un objectif à une position aléatoire */
@@ -35,12 +37,16 @@ public class Game implements interfaces.Game {
 
 	@Override
 	public Robot getRobot1() {
-		return rob1;
+		Robot r = new RobotImpl();
+		r.set(1000,500,100,100,Math.PI/3);
+		return r;
 	}
 
 	@Override
 	public Robot getRobot2() {
-		return rob2;
+		Robot r = new RobotImpl();
+		r.set(200,200,100,100,Math.PI/3);
+		return r;
 	}
 
 	@Override
@@ -50,24 +56,38 @@ public class Game implements interfaces.Game {
 
 	@Override
 	public void update() {
+		
 		rob1 = bl.getRobot1();
 		rob2 = bl.getRobot2();
 		
-		boolean r1OnPoint = robotOnPoint(rob1, obj);
-		boolean r2OnPoint = robotOnPoint(rob2, obj);
-		
-		if(r1OnPoint || r2OnPoint) {
-			if(r1OnPoint) {
-				score1++;
-			} else {
-				score2++;
+		if(hasRobots()) {
+					
+			boolean r1OnPoint = robotOnPoint(rob1, obj);
+			boolean r2OnPoint = robotOnPoint(rob2, obj);
+			
+			if(r1OnPoint || r2OnPoint) {
+				if(r1OnPoint) {
+					score1++;
+				} else {
+					score2++;
+				}
+				genObjective();
 			}
-			genObjective();
 		}
 	}
 	
 	private boolean robotOnPoint(Robot r, Point p) {
 		return false; // TODO
-		
+	}
+
+	@Override
+	public boolean hasRobots() {
+		return rob1 != null && rob2 != null;
+	}
+
+	@Override
+	public void start() {
+		started = true;
+		bl.captureRobots();
 	}
 }
